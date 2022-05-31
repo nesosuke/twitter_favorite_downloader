@@ -1,3 +1,4 @@
+import metadata
 import json
 import os
 import sys
@@ -53,6 +54,8 @@ auth = tweepy.OAuthHandler(CUSTOMER_KEY, CUSTOMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
+db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
+metadata.init_db(db_path)
 
 res = api.get_favorites(screen_name=screen_name, count=count)
 
@@ -63,6 +66,7 @@ def main():
         time.sleep(1)
 
         if 'extended_entities' in twi._json:
+            metadata.insert_twi(twi._json, db_path)
             tweet_id = str(twi.id)
             for media_data in twi._json['extended_entities']['media']:
                 # 複数画像対応
