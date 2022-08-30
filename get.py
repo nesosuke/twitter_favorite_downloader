@@ -12,7 +12,7 @@ import metadata
 
 available_saveto = ['local', 's3']
 
-config_path = '../config.json'
+config_path = 'config.json'
 
 # read basic config
 with open(config_path, 'r') as f:
@@ -125,11 +125,15 @@ def main():
         bucket.put_object(
             Key=SAVE_DIR + 'favorite_tweets.sqlite', Body=open(db_path, 'rb'))
         os.remove(db_path)
+    elif save_to == 'local':
+        with open(db_path, 'rb') as f:
+            with open(SAVE_DIR + 'favorite_tweets.sqlite', 'wb') as f2:
+                f2.write(f.read())
 
     print("{} files downloaded. finish at {}".format(
         filecount, time.strftime("%Y/%m/%d %H:%M:%S")))
 
-    return 0
+    return None
 
 
 if '__main__' == __name__:
