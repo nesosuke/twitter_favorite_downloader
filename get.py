@@ -54,7 +54,15 @@ auth = tweepy.OAuthHandler(CUSTOMER_KEY, CUSTOMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
-db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
+# db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
+db_path = 'favorite_tweets.sqlite'
+
+if save_to == "s3":
+    from botocore.exceptions import ClientError
+    try:
+        bucket.download_file(SAVE_DIR + 'favorite_tweets.sqlite', db_path)
+    except ClientError:
+        pass
 metadata.init_db(db_path)
 
 res = api.get_favorites(screen_name=screen_name, count=count)
@@ -108,6 +116,11 @@ def main():
                         elif save_to == "s3":
                             bucket.put_object(Key=filepath, Body=req.content)
                         filecount += 1
+
+    if save_to == 's3':
+        bucket.put_object(
+            Key=SAVE_DIR + 'favorite_tweets.sqlite', Body=open(db_path, 'rb'))
+        os.remove(db_path)
 
     print("{} files downloaded. finish at {}".format(
         filecount, time.strftime("%Y/%m/%d %H:%M:%S")))
