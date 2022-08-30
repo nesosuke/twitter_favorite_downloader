@@ -1,4 +1,3 @@
-import metadata
 import json
 import os
 import sys
@@ -6,11 +5,17 @@ import time
 
 import requests
 import tweepy
+from boto3.session import Session
+from botocore.exceptions import ClientError
+
+import metadata
 
 available_saveto = ['local', 's3']
 
+config_path = 'config.json'
+
 # read basic config
-with open('config.json', 'r') as f:
+with open(config_path, 'r') as f:
     config = json.load(f)
 
     save_to = config['save_to']
@@ -24,8 +29,9 @@ with open('config.json', 'r') as f:
 if save_to not in available_saveto:
     sys.exit("save_toが不正です")
 
+
 if save_to == "local":
-    with open('config.json', 'r') as f:
+    with open(config_path, 'r') as f:
         config = json.load(f)
         SAVE_DIR = config['save_dir_local'] + '/'
 
@@ -33,8 +39,7 @@ if save_to == "local":
         os.makedirs(SAVE_DIR)
 
 elif save_to == "s3":
-    from boto3.session import Session
-    with open('config.json', 'r') as f:
+    with open(config_path, 'r') as f:
         config = json.load(f)
         S3_access_key = config["S3_access_key"]
         S3_secret_key = config["S3_secret_key"]
@@ -54,7 +59,14 @@ auth = tweepy.OAuthHandler(CUSTOMER_KEY, CUSTOMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
-db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
+# db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
+db_path = '/tmp/favorite_tweets.sqlite'
+
+if save_to == "s3":
+    try:
+        bucket.download_file(SAVE_DIR + 'favorite_tweets.sqlite', db_path)
+    except ClientError:
+        pass
 metadata.init_db(db_path)
 
 res = api.get_favorites(screen_name=screen_name, count=count)
@@ -109,8 +121,19 @@ def main():
                             bucket.put_object(Key=filepath, Body=req.content)
                         filecount += 1
 
+    if save_to == 's3':
+        bucket.put_object(
+            Key=SAVE_DIR + 'favorite_tweets.sqlite', Body=open(db_path, 'rb'))
+        os.remove(db_path)
+    elif save_to == 'local':
+        with open(db_path, 'rb') as f:
+            with open(SAVE_DIR + 'favorite_tweets.sqlite', 'wb') as f2:
+                f2.write(f.read())
+
     print("{} files downloaded. finish at {}".format(
         filecount, time.strftime("%Y/%m/%d %H:%M:%S")))
+
+    return None
 
 
 if '__main__' == __name__:
