@@ -131,3 +131,47 @@ dmypy.json
 config.json
 twitter_pics/
 favorite_tweets.sqlite
+
+bin/
+certifi/
+certifi-2022.6.15.dist-info/
+charset_normalizer/
+charset_normalizer-2.1.1.dist-info/
+idna/
+idna-3.3.dist-info/
+oauthlib/
+oauthlib-3.2.0.dist-info/
+requests/
+requests_oauthlib/
+requests_oauthlib-1.3.1.dist-info/
+requests-2.28.1.dist-info/
+tweepy/
+tweepy-4.10.1.dist-info/
+urllib3/
+urllib3-1.26.12.dist-info/
+
+----                 -------------         ------ ----
+d----          2022/08/30    20:37                bin
+d----          2022/08/30    20:37                certifi
+d----          2022/08/30    20:37                certifi-2022.6.15.dist-info
+d----          2022/08/30    20:37                charset_normalizer
+d----          2022/08/30    20:37                charset_normalizer-2.1.1.dist-info
+d----          2022/08/30    20:37                idna
+d----          2022/08/30    20:37                idna-3.3.dist-info
+d----          2022/08/30    20:40                oauthlib
+d----          2022/08/30    20:40                oauthlib-3.2.0.dist-info
+d----          2022/08/30    20:37                requests
+d----          2022/08/30    20:40                requests_oauthlib
+d----          2022/08/30    20:40                requests_oauthlib-1.3.1.dist-info
+d----          2022/08/30    20:37                requests-2.28.1.dist-info
+d----          2022/08/30    20:40                tweepy
+d----          2022/08/30    20:40                tweepy-4.10.1.dist-info
+d----          2022/08/30    20:37                urllib3
+d----          2022/08/30    20:37                urllib3-1.26.12.dist-info
+-a---          2022/08/30    19:08           1982 .gitignore
+-a---          2022/08/30    18:38            602 config.json
+-a---          2022/08/30    20:45           4626 get.py
+-a---          2022/08/30    20:40        1463893 lambda.zip
+-a---          2022/08/30    20:41            220 main.py
+-a---          2022/08/30    19:07           1523 metadata.py
+-a---          2022/08/30    19:07            566 README.md

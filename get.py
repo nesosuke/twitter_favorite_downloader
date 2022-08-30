@@ -1,4 +1,3 @@
-import metadata
 import json
 import os
 import sys
@@ -6,11 +5,17 @@ import time
 
 import requests
 import tweepy
+from boto3.session import Session
+from botocore.exceptions import ClientError
+
+import metadata
 
 available_saveto = ['local', 's3']
 
+config_path = '../config.json'
+
 # read basic config
-with open('config.json', 'r') as f:
+with open(config_path, 'r') as f:
     config = json.load(f)
 
     save_to = config['save_to']
@@ -24,8 +29,9 @@ with open('config.json', 'r') as f:
 if save_to not in available_saveto:
     sys.exit("save_toが不正です")
 
+
 if save_to == "local":
-    with open('config.json', 'r') as f:
+    with open(config_path, 'r') as f:
         config = json.load(f)
         SAVE_DIR = config['save_dir_local'] + '/'
 
@@ -33,8 +39,7 @@ if save_to == "local":
         os.makedirs(SAVE_DIR)
 
 elif save_to == "s3":
-    from boto3.session import Session
-    with open('config.json', 'r') as f:
+    with open(config_path, 'r') as f:
         config = json.load(f)
         S3_access_key = config["S3_access_key"]
         S3_secret_key = config["S3_secret_key"]
@@ -55,10 +60,9 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
 # db_path = SAVE_DIR+'/'+'favorite_tweets.sqlite'
-db_path = 'favorite_tweets.sqlite'
+db_path = '/tmp/favorite_tweets.sqlite'
 
 if save_to == "s3":
-    from botocore.exceptions import ClientError
     try:
         bucket.download_file(SAVE_DIR + 'favorite_tweets.sqlite', db_path)
     except ClientError:
@@ -124,6 +128,8 @@ def main():
 
     print("{} files downloaded. finish at {}".format(
         filecount, time.strftime("%Y/%m/%d %H:%M:%S")))
+
+    return 0
 
 
 if '__main__' == __name__:
